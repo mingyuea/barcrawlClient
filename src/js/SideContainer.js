@@ -1,6 +1,7 @@
 import React from 'react';
-import { Row } from 'reactstrap';
+import { Row, Col } from 'reactstrap';
 
+import { colColor } from './StyleObj.js';
 import SearchComp from './SearchComp.js';
 import ListComp from './ListComp.js';
 
@@ -32,9 +33,9 @@ class SideContainer extends React.Component {
 		}
 
 		return(
-			<Row className="h-100 w-100">
+			<Col xs="12" sm="6" md="5" lg="4" className="h-100 d-flex align-items-center justify-content-center overflow-auto" style={colColor}>
 				{renderBlock}
-			</Row>
+			</Col>
 		);
 	}
 }

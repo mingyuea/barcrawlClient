@@ -40,7 +40,7 @@ const cardColor = {
 
 const listIcon = {
 	color: "white",
-	size: "40"
+	size: "30"
 }
 
 const listStyle ={

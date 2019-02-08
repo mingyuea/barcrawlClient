@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { Col, Card, CardText, Form, FormGroup, Label, Input, Button, Spinner } from 'reactstrap';
-import { bodyFont, subtitleFontFam, colColor, cardColor } from './StyleObj.js'
+import { Card, CardText, Form, FormGroup, Label, Input, Button, Spinner } from 'reactstrap';
+import { bodyFont, subtitleFontFam, cardColor } from './StyleObj.js'
 
 
 class SearchComp extends React.Component {
@@ -37,7 +37,6 @@ class SearchComp extends React.Component {
 
 	render(){
 		return(
-			<Col xs="12" sm="5" lg="4" className="h-100 d-flex align-items-center justify-content-center" style={colColor}>
 				<Card body style={cardColor} className="text-center text-white">
 					<h3 className="mb-2" style={subtitleFontFam}>Plan a Bar Crawl</h3>
 						<hr></hr>
@@ -50,7 +49,7 @@ class SearchComp extends React.Component {
 							<FormGroup>
 								<h6 className="font-italic" style={subtitleFontFam}>Optionals</h6>
 								<CardText style={bodyFont}>Try and just enter in one or the other. You might get a weird route if fill out both (but does it really matter if you're drunk?)</CardText>
-								<Input onChange={this.handleChange} type="number" min="1" id="numVal" value={this.state.numVal} placeholder="How many bars?" />
+								<Input onChange={this.handleChange} type="number" min="1" max="9" id="numVal" value={this.state.numVal} placeholder="How many bars?" />
 								<Input className="mt-3" onChange={this.handleChange} type="text" id="endVal" value={this.state.endVal} placeholder="Enter in an ending address" />
 							</FormGroup>
 
@@ -59,7 +58,6 @@ class SearchComp extends React.Component {
 							</FormGroup>
 						</Form>
 				</Card>
-			</Col>
 		);
 	}
 }

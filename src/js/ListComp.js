@@ -12,7 +12,7 @@ class ListComp extends React.Component {
 		super(props);
 
 		this.state = {
-			route: ["Place 1", "Place 2", "Place 3", "Place 4", "Place 5", "Place 6", "Place 7"]
+			locations: ["Place 1", "Place 2", "Place 3", "Place 4", "Place 5", "Place 6", "Place 7"]
 		}
 
 		this.handleCancel = this.handleCancel.bind(this);
@@ -22,12 +22,12 @@ class ListComp extends React.Component {
 
 	handleCancel(e){
 		let ind = e.currentTarget.id;
-		let routeCopy = [...this.state.route];
+		let routeCopy = [...this.state.locations];
 
 		routeCopy.splice(ind, 1);
 
 		this.setState({
-			route: routeCopy
+			locations: routeCopy
 		})
 		console.log(ind);
 	}
@@ -42,8 +42,8 @@ class ListComp extends React.Component {
 
 	render(){
 		let listRender = [];
-		let routeArr = this.state.route;
-		let routeLen = routeArr.length;
+		let locArr = this.state.locations;
+		let routeLen = locArr.length;
 
 		if(routeLen > 0){
 			for(let i = 0; i < routeLen; i++){
@@ -51,7 +51,7 @@ class ListComp extends React.Component {
 					<ListGroupItem>
 						<Row>
 						<Col xs="9" className="px-0">
-						{routeArr[i]}
+						{locArr[i]}
 						</Col>
 						<Col xs="3" className="px-0">
 						<Button className="btn-danger" id={i} onClick={this.handleCancel}><XCircle style={listIcon} /></Button>
@@ -63,9 +63,8 @@ class ListComp extends React.Component {
 		}
 
 		return(
-			<Col xs="12" sm="6" md="5" lg="4" className="h-100 d-flex align-items-center justify-content-center overflow-auto" style={colColor}>
 				<Card body style={cardColor} className="text-center text-white overflow-auto">
-					<h3 className="mb-1" style={subtitleFontFam}>Your Intenerary</h3>
+					<h3 className="mb-1" style={subtitleFontFam}>Your Bar List</h3>
 					<hr className="mb-3"></hr>
 					<PerfectScrollbar>
 					<ListGroup style={listStyle}>
@@ -75,7 +74,6 @@ class ListComp extends React.Component {
 					<Button className="mt-1 btn-info" onClick={this.handleConfirm}>START THE BAR CRAWL!</Button>
 					<Button className="mt-1 btn-danger" onClick={this.handleBack}> GO BACK </Button>
 				</Card>
-			</Col>
 		)
 	}
 }

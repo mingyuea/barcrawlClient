@@ -2,6 +2,7 @@ import React from 'react';
 import { Container, Row } from 'reactstrap';
 //import Auth from './Auth.js'
 import SideContainer from './SideContainer.js';
+import MapCont from './MapCont.js';
 
 
 const fetchURL = 'http://localhost:5000/'
@@ -80,7 +81,10 @@ class Root extends React.Component{
 	render(){
 		return(
 			<Container className="w-100 h-100" style={contStyle}>
+				<Row className="h-100 w-100">
 				<SideContainer />
+				<MapCont />
+				</Row>
 			</Container>
 		)
 	}
