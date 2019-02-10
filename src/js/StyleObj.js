@@ -40,11 +40,16 @@ const cardColor = {
 
 const listIcon = {
 	color: "white",
-	size: "30"
+	size: "25"
+}
+
+const listIcon2 = {
+	color: "black",
+	size: "25"
 }
 
 const listStyle ={
-	maxHeight: "65%",
+	maxHeight: "25%",
 	overflowY: "auto",
 	color: "black"
 }

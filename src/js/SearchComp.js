@@ -9,7 +9,7 @@ class SearchComp extends React.Component {
 		super(props);
 
 		this.state = {
-			inputVal: "",
+			startAdd: "",
 			endVal: "",
 			numVal: ""
 		}
@@ -30,9 +30,7 @@ class SearchComp extends React.Component {
 
 	handleSubmit(e){
 		e.preventDefault();
-		//let searchVal = this.state.inputVal;
-		console.log(this.state);
-		this.props.onPhase(1);
+		this.props.onSubmit(this.state)
 	}
 
 	render(){
@@ -42,8 +40,8 @@ class SearchComp extends React.Component {
 						<hr></hr>
 						<Form>
 							<FormGroup className="mb-4">
-								<Label style={subtitleFontFam} for="inputVal" className="font-italic">Pick a Starting Address</Label>
-								<Input onChange={this.handleChange} type="text" id="inputVal" value={this.state.inputVal} placeholder="e.g. 2517 Durant Ave, Berkeley, CA 94704" />
+								<Label style={subtitleFontFam} for="startAdd" className="font-italic">Pick a Starting Address</Label>
+								<Input onChange={this.handleChange} type="text" id="startAdd" value={this.state.startAdd} placeholder="e.g. 2517 Durant Ave, Berkeley, CA 94704" />
 							</FormGroup>
 
 							<FormGroup>

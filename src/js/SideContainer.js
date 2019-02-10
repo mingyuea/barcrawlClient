@@ -8,28 +8,16 @@ import ListComp from './ListComp.js';
 class SideContainer extends React.Component {
 	constructor(props){
 		super(props);
-
-		this.state = {
-			renderPhase: 0
-		}
-
-		this.handlePhaseChange = this.handlePhaseChange.bind(this);
-	}
-
-	handlePhaseChange(phase){
-		this.setState({
-			renderPhase: phase
-		});
 	}
 
 	render(){
-		let phase = this.state.renderPhase;
+		let phase = this.props.renderPhase;
 		let renderBlock;
 		if(phase == 0){
-			renderBlock = <SearchComp onPhase={this.handlePhaseChange} />
+			renderBlock = <SearchComp onSubmit={this.props.onSubmit} />
 		}
 		else if(phase == 1){
-			renderBlock = <ListComp onPhase={this.handlePhaseChange} />
+			renderBlock = <ListComp locations={this.props.locations} collBool={this.props.collBool} onSelect={this.props.onSelect} onCancel={this.props.onCancel} onPhase={this.props.onPhase} />
 		}
 
 		return(
