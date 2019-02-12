@@ -4,10 +4,7 @@ import { XCircle, ChevronRight, ChevronDown } from 'react-feather';
 import 'react-perfect-scrollbar/dist/css/styles.css';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
-import { bodyFont, titleFontFam, subtitleFontFam, colColor, cardColor, listIcon, listIcon2, listStyle } from './StyleObj.js'
-
-
-
+import { bodyFont, titleFontFam, subtitleFontFam, colColor, cardColor, listGroupItem, listIcon, listIcon2, listStyle } from './StyleObj.js'
 
 class ListComp extends React.Component {
 	constructor(props){
@@ -74,7 +71,7 @@ class ListComp extends React.Component {
 				}
 
 				listRender.push(
-					<ListGroupItem style={{cursor: "pointer"}} >
+					<ListGroupItem style={listGroupItem} >
 						<Row>
 						<Col xs="2" className="px-0" id={i} onClick={this.handleSelect}>
 							{chev}

@@ -5,7 +5,7 @@ import SideContainer from './SideContainer.js';
 import MapCont from './MapCont.js';
 
 
-const fetchURL = 'http://localhost:5000/'
+const fetchURL = '';
 
 const contStyle = {
 	height: "100%",
@@ -20,7 +20,7 @@ const contStyle = {
 }
 
 
-const testObj1 = {
+/*const testObj1 = {
             "name": "Pappy's Grill & Sports Bar",
             "image_url": "https://s3-media3.fl.yelpcdn.com/bphoto/geR-9TmCt7t458euuW7W9Q/o.jpg",
             "rating": 3,
@@ -136,7 +136,7 @@ const testObj3 = {
             "phone": "+15108485968",
             "display_phone": "(510) 848-5968",
             "distance": 72.43474806906218
-        }
+        }*/
 
 class Root extends React.Component{
 	constructor(props){
@@ -144,10 +144,15 @@ class Root extends React.Component{
 
 		this.state = {
 			renderPhase: 0,
-			locationArr: [testObj1, testObj2, testObj3],
+			locationArr: [],
+			//locationArr: [testObj1, testObj2, testObj3],
 			collBool: null,
 			drawRoute: false,
-			searchState: {}
+			searchState: {},
+			locInd: null,
+			viewInd: 0,
+			playState: "play",
+			error: null
 		}
 
 		this.handleSubmit = this.handleSubmit.bind(this);
@@ -155,29 +160,77 @@ class Root extends React.Component{
 		this.listCancel = this.listCancel.bind(this);
 		this.listToggle = this.listToggle.bind(this);
 		this.handleMapClick = this.handleMapClick.bind(this);
+		this.handlePlayToggle = this.handlePlayToggle.bind(this);
+		this.handleFinishRender = this.handleFinishRender.bind(this);
 	}
 
 	handleSubmit(stateObj){
 		let { startAdd, numVal, endVal } = stateObj;
-		//console.log(startAdd);
-		this.setState({
-			renderPhase: 1,
-			searchState: stateObj
+		let searchObj = {
+			startAdd: startAdd,
+			endAdd: endVal,
+			limitNum: numVal
+		}
+
+		/*fetch to make yelp API call and save then return the location*/
+
+		fetch(fetchURL+'/api/search', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(searchObj)
+		})
+		.then(res => res.json())
+		.then(data => {
+			if(data.actionSuccess){
+				let locArr = data.locations;
+				let locLen = locArr.length;
+				let tmpArr = [];
+
+				for(let i = 0; i < locLen; i++){
+					tmpArr.push(false);
+				}
+
+				this.setState({
+						locationArr: locArr,
+						renderPhase: 1,
+						searchState: stateObj,
+						collBool: tmpArr, 
+						error: null
+				});
+			}
+			else{
+				this.setState({
+					error: data.error
+				})
+			}
 		})
 	}
 
 	handlePhaseChange(phase){
-		if(phase == 2){
-			console.log("phase 2");
+		if(phase == 0){
 			this.setState({
 				renderPhase: phase,
-				drawRoute: true
+				locInd: null,
+				locationArr: [],
+				viewInd: 0,
+				collBool: null,
+				playState: "play",
+				drawRoute: false
+			});
+		}
+		else if(phase == 2){
+			this.setState({
+				renderPhase: phase,
+				drawRoute: true,
+				locInd: 0,
 			});
 		}
 		else{
 			this.setState({
 				renderPhase: phase
-			})
+			});
 		}
 	}
 
@@ -192,12 +245,22 @@ class Root extends React.Component{
 			collBool: toggCopy,
 			locationArr: locCopy
 		});
+
+		/*fetch() update locationArr*/
 	}
 
 	handleMapClick(ind){
-		//let ind = e.currentTarget.id;
-		this.listToggle(ind); 
-		//console.log(ind);
+		if(this.state.renderPhase == 1){
+			console.log("Otoggle")
+			this.listToggle(ind);
+		}
+		else if(this.state.renderPhase == 2){
+			console.log("paused state")
+			this.setState({
+				playState: "pause",
+				viewInd: ind
+			})
+		}
 	}
 
 	listToggle(ind){
@@ -210,21 +273,57 @@ class Root extends React.Component{
 			collBool: copyArr
 		});
 
-		//this.props.onSelect(ind);
 	}
 
-	componentDidMount(){
-		let locArr = this.state.locationArr;
-		let locLen = locArr.length;
-		let tmpArr = [];
-
-		for(let i = 0; i < locLen; i++){
-			tmpArr.push(false);
+	handlePlayToggle(action, ind = 0){
+		//console.log(action);
+		if(action == "play"){
+			this.setState({
+				playState: action
+			})
 		}
+		else if(action == "pause"){
+			this.setState({
+				viewInd: ind,
+				playState: action
+			})
+		}
+		else if(action == "next"){
+			let currInd = this.state.locInd;
+			let newInd = currInd + 1;
+			
+			//console.log(newInd, "LOC IND");
+			if (currInd != this.state.locationArr.length - 1){
+				this.setState({
+					locInd: newInd
+				})
+			}
+			/*fetch() update index*/
+		}
+		else if(action == "back"){
+			let currInd = this.state.locInd;
+			let newInd = currInd - 1;
 
+			//console.log(newInd, "LOC IND");
+			if(currInd != 0){
+				this.setState({
+					locInd: newInd
+				})
+			}
+			/*fetch() update index*/
+		}
+		else{
+			this.setState({
+				renderPhase: 1,
+				locInd: null
+			});
+		}
+	}
+
+	handleFinishRender(){
 		this.setState({
-			collBool: tmpArr
-		});
+			drawRoute: false
+		})
 	}
 
 	render(){
@@ -238,13 +337,20 @@ class Root extends React.Component{
 					onPhase={this.handlePhaseChange}
 					onCancel={this.listCancel}
 					onSelect={this.listToggle}
+					onPlayToggle={this.handlePlayToggle}
 					locations={this.state.locationArr}
+					locInd={this.state.locInd}
+					viewInd={this.state.viewInd}
+					playState={this.state.playState}
+					error={this.state.error}
 				/>
 				<Col xs="12" sm="6" md="7" lg="8" className="h-100 px-0 d-flex align-items-center justify-content-center overflow-auto">
 				<MapCont
 					drawRoute={this.state.drawRoute} 
-					markerArr={this.state.locationArr} 
-					onClick={this.handleMapClick} 
+					markerArr={this.state.locationArr}
+					locInd={this.state.locInd} 
+					onClick={this.handleMapClick}
+					finishRender={this.handleFinishRender} 
 					endDest={this.state.searchState.endVal}
 				/>
 				</Col>

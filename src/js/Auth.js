@@ -1,6 +1,6 @@
 import React from 'react';
 //import { Connect } from 'react-redux';
-import { Row, Col, Card, CardTitle, CardBody, CardFooter, Form, FormGroup, Input, Label, Button } from 'reactstrap';
+import { Row, Col, Spinner, Card, CardTitle, CardBody, CardText, CardFooter, Form, FormGroup, Input, Label, Button } from 'reactstrap';
 
 
 class Auth extends React.Component{
@@ -11,7 +11,9 @@ class Auth extends React.Component{
 			login: true,
 			uInput: "",
 			p1Input: "",
-			p2Input: ""
+			p2Input: "",
+			error: null,
+			spinner: false
 		}
 
 		this.handleInput = this.handleInput.bind(this);
@@ -37,18 +39,101 @@ class Auth extends React.Component{
 
 	handleSubmit(e){
 		e.preventDefault();
-		console.log(this.state);
+
+		let reqObj = {
+			"username": this.state.uInput,
+			"password": this.state.p1Input
+		}
+
+		//SIGNUP
+		if(!this.state.login){
+			if(this.state.p1Input != this.state.p2Input){
+				this.setState({
+					error: "Passwords must match"
+				});
+			}
+			else{
+
+				this.setState({
+					spinner: true
+				}) 
+
+				fetch('/auth/signup', {
+					method: "POST",
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify(reqObj)
+					})
+					.then(res => res.json())
+					.then(data => {
+						if(data.actionSuccess){
+							window.location = data.redir;
+						}
+						else{
+							this.setState({
+								spinner: false,
+								error: data.error
+							})
+						}
+					});
+			}
+		}
+		else{  //LOGIN
+			this.setState({
+				spinner: true
+			});
+
+			fetch('/auth/login', {
+					method: "POST",
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify(reqObj)
+					})
+					.then(res => res.json())
+					.then(data => {
+						if(data.actionSuccess){
+							window.location = data.redir;
+						}
+						else{
+							this.setState({
+								spinner: false,
+								error: data.error
+							})
+						}
+					})
+		}
+
+		//console.log(this.state);
 	}
 
 	handleAnon(){
-		console.log("Anon use");
+		//console.log("Anon use");
+		this.setState({
+			spinner: true
+		})
+
+		fetch('/auth/tmp')
+		.then(res => res.json())
+		.then(data => {
+			if(data.actionSuccess){
+				window.location = data.redir
+			}
+		});
 	}
 
 	render(){
+		//console.log(this.state.spinner);
 		let p2Render = null;
 		let titleText = "Login";
 		let buttonText = "Login";
 		let btn2Text = "Sign up";
+		let errRend;
+
+		let cardRend;
+
+
 		if(!(this.state.login)){
 			titleText = "Register";
 			buttonText = "Sign Up";
@@ -60,10 +145,11 @@ class Auth extends React.Component{
                     	</FormGroup>
 		}
 
-		return(
-			<Row className="full-height-vh">
-				<Col xs="12" className="d-flex align-items-center justify-content-center">
-					<Card className="text-center width-350">
+		if(this.state.spinner){
+			cardRend = <Spinner color="info" />
+		}
+		else{
+			cardRend = <Card className="text-center width-350">
                     	<CardBody>
                     		<CardTitle><h4>{titleText}</h4></CardTitle>
                     			<Form className="pt-3" onSubmit={this.handleSubmit} >
@@ -92,6 +178,8 @@ class Auth extends React.Component{
 	                    				</Col>
                     				</FormGroup>
                     			</Form>
+
+                    			<CardText>{errRend}</CardText>
                     	</CardBody>
                     	<CardFooter>
                     		<Col md="12" className="d-flex align-items-center justify-content-center">
@@ -101,6 +189,16 @@ class Auth extends React.Component{
                     		</Col>
                     	</CardFooter>
                     </Card>
+		}
+
+		if(this.state.error){
+			errRend = this.state.error
+		}
+
+		return(
+			<Row className="full-height-vh">
+				<Col xs="12" className="d-flex align-items-center justify-content-center">
+					{cardRend}
 				</Col>
 			</Row>
 		)

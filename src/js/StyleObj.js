@@ -38,6 +38,12 @@ const cardColor = {
 	minHeight: "50%"
 };
 
+const listGroupItem = {
+	cursor: "pointer",
+	backgroundColor: 'rgba(0, 6, 15, 1)',
+	color: "white"
+}
+
 const listIcon = {
 	color: "white",
 	size: "25"
@@ -48,10 +54,21 @@ const listIcon2 = {
 	size: "25"
 }
 
-const listStyle ={
+const listStyle = {
 	maxHeight: "25%",
 	overflowY: "auto",
 	color: "black"
 }
 
-export { bodyFont, titleFontFam, subtitleFontFam, colColor, cardColor, listIcon, listStyle };
+const playerBtn = {
+	color: "white",
+	size: "25",
+	cursor: "pointer"
+}
+
+const playerBtnVoid = {
+	color: "black",
+	size: "25"
+}
+
+export { bodyFont, titleFontFam, subtitleFontFam, colColor, cardColor, playerBtn, playerBtnVoid, listGroupItem, listIcon, listStyle };

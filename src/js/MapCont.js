@@ -26,19 +26,19 @@ class MapCont extends React.Component{
 	}
 
 	handleClick(props, marker, e){
-		//let ind = e.currentTarget.id;
 		let ind2 = marker.id;
 		this.props.onClick(ind2);
 	}
 
-	componentDidMount(){
-		console.log("MAP MOUNTED");
-	}
-
 	componentDidUpdate(){
-		console.log("map updated");
-
 		if(this.props.drawRoute){
+			console.log("rerendering...");
+			let mapObj = this.childMap.map;
+			let directionsService = new google.maps.DirectionsService();
+			let directionsDisplay = new google.maps.DirectionsRenderer();
+
+			directionsDisplay.setDirections({routes: []});
+
 			let mArr = this.props.markerArr;
 			let mLen = mArr.length - 1;
 			let coorArr = [];
@@ -55,7 +55,7 @@ class MapCont extends React.Component{
 						lat: mArr[i].coordinates.latitude,
 						lng: mArr[i].coordinates.longitude
 					},
-					stopover :true
+					stopover :false
 				}
 
 				coorArr.push(tmpObj);
@@ -71,7 +71,7 @@ class MapCont extends React.Component{
 				}
 			}
 
-			let optionsObj = {
+			let routeObj = {
 				travelMode: "WALKING",
 				origin: startDest,
 				destination: endDest,
@@ -79,43 +79,63 @@ class MapCont extends React.Component{
 				optimizeWaypoints: true
 			}
 
-			let mapObj = this.childMap.map;
-			//console.log(testObj, "is mapNode");
+			let renderOptions = {
+				suppressMarkers: true
+			}
 
+			/*let mapObj = this.childMap.map;
+			//let directionOptions = new google.maps.DirectionsRendererOptions(renderOptions);
 			let directionsService = new google.maps.DirectionsService();
-			let directionsDisplay = new google.maps.DirectionsRenderer();
+			let directionsDisplay = new google.maps.DirectionsRenderer();*/
 
 			directionsDisplay.setMap(mapObj);
-			directionsService.route(optionsObj, (result, status) => {
+			directionsDisplay.setOptions(renderOptions);
+
+			directionsService.route(routeObj, (result, status) => {
 				if(status == 'OK'){
 					console.log(result);
-					directionsDisplay.setDirection(result);
+					directionsDisplay.setDirections(result);
 				}
 				else{
 					console.log("Google Maps Error: " + status);
 				}
 			})
-			
+		
+		this.props.finishRender();
 		}
 	}
 
 	render(){
 		let rendArr;
-		if(this.props.markerArr){
+		let currLoc;
+		let initCenter = {lat: 37.8670247, lng:-122.2660986};
+
+		if(this.props.markerArr.length > 0){
 			let mArr = this.props.markerArr;
 			//let rendArr = [];
 			let alph = "ABCDEFGHIJK";
+			let newCenter = {
+				lat: Number(mArr[0].coordinates.latitude),
+				lng: Number(mArr[0].coordinates.longitude)
+			}
+			let mapObj = this.childMap.map;
+			mapObj.panTo(newCenter);
 
 			rendArr = mArr.map((elem, ind) => <Marker onClick={this.handleClick} label={alph[ind]} id={ind} position={{lat: Number(elem.coordinates.latitude), lng: Number(elem.coordinates.longitude)}} title={elem.name} />);
-			//console.log(rendArr.length);
 		}
 
+		if(this.props.locInd != null){
+			let locObj = this.props.markerArr[this.props.locInd];
+			let posit = {lat: Number(locObj.coordinates.latitude), lng: Number(locObj.coordinates.longitude)}
+			//console.log(posit, "is posit");
+			currLoc = <Marker id="person" icon={{url: require("./drink2.png"), scaledSize: new google.maps.Size(40,40), anchor: new google.maps.Point(20,20)}} position={posit} title="Currently Drinking Here!" />
+			rendArr.splice(this.props.locInd, 1, currLoc);
+		}
 		
 
 		return(
 			<div style={mapDiv}>
-		        <Map style={mapStyles} google={this.props.google} ref={(newRef )=> this.childMap = newRef} zoom={16} initialCenter={{lat: 37.8670247, lng:-122.2660986}} >
-					<Marker label="2" position={{lat: 37.8670246, lng: -122.2660985}} />
+		        <Map style={mapStyles} google={this.props.google} ref={(newRef )=> this.childMap = newRef} zoom={16} initialCenter={initCenter} >
 					{rendArr}
 				</Map>
 			</div>
@@ -124,7 +144,8 @@ class MapCont extends React.Component{
 }
 
 export default GoogleApiWrapper({
-  apiKey: ('')
+  //apiKey: ('')
+  apiKey: ('AIzaSyDuKS_Z1jVp443behy4qKsyJUw2T0N78X8')
 })(MapCont);
 
 //export default MapCont;

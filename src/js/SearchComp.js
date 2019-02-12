@@ -1,8 +1,8 @@
 import React from 'react';
-
-import { Card, CardText, Form, FormGroup, Label, Input, Button, Spinner } from 'reactstrap';
+import { Card, CardText, CardFooter, Badge, Form, FormGroup, Label, Input, Button, Spinner } from 'reactstrap';
 import { bodyFont, subtitleFontFam, cardColor } from './StyleObj.js'
-
+import 'react-perfect-scrollbar/dist/css/styles.css';
+import PerfectScrollbar from 'react-perfect-scrollbar';
 
 class SearchComp extends React.Component {
 	constructor(props){
@@ -34,14 +34,19 @@ class SearchComp extends React.Component {
 	}
 
 	render(){
+		let errMsg
+		if(this.props.error){
+			errMsg = <p className="text-danger">Error: {this.props.error}</p>
+		}
 		return(
 				<Card body style={cardColor} className="text-center text-white">
-					<h3 className="mb-2" style={subtitleFontFam}>Plan a Bar Crawl</h3>
-						<hr></hr>
+					<PerfectScrollbar>
+					<h4 className="mb-1" style={subtitleFontFam}>Plan a Bar Crawl</h4>
+						<hr className="my-2"></hr>
 						<Form>
-							<FormGroup className="mb-4">
+							<FormGroup size="sm" className="mb-3">
 								<Label style={subtitleFontFam} for="startAdd" className="font-italic">Pick a Starting Address</Label>
-								<Input onChange={this.handleChange} type="text" id="startAdd" value={this.state.startAdd} placeholder="e.g. 2517 Durant Ave, Berkeley, CA 94704" />
+								<Input onChange={this.handleChange} type="text" id="startAdd" value={this.state.startAdd} placeholder="e.g. 2517 Durant Ave, Berkeley, CA 94704" required />
 							</FormGroup>
 
 							<FormGroup>
@@ -52,9 +57,14 @@ class SearchComp extends React.Component {
 							</FormGroup>
 
 							<FormGroup>
+								{errMsg}
 								<Button color="info" onClick={this.handleSubmit}>FIND ME A ROUTE!</Button>
 							</FormGroup>
 						</Form>
+						<CardFooter className="pt-1 pb-0">
+							<a href="/static/auth" color="info">Login/Signup</a>
+						</CardFooter>
+					</PerfectScrollbar>
 				</Card>
 		);
 	}
