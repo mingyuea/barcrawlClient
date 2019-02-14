@@ -1,9 +1,9 @@
 {
-  "name": "pubcrawler",
+  "name": "barcrawler-yelp-googlemaps",
   "version": "1.0.0",
   "private": true,
   "engines": {
-    "node": "8.11.3",
+    "node": "10.14.0",
     "npm": "6.4.1"
   },
   "main": "index.js",
@@ -15,7 +15,6 @@
   "license": "ISC",
   "dependencies": {
     "bootstrap": "^4.2.1",
-    "google-map-react": "^1.1.2",
     "google-maps-react": "^2.0.2",
     "jquery": "^3.3.1",
     "popper.js": "^1.14.7",

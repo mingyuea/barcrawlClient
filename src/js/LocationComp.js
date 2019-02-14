@@ -40,7 +40,6 @@ class LocationComp extends React.Component{
 	}
 
 	handleEnd(){
-		console.log("to phase 3");
 		this.props.onPhase(3);
 	}
 

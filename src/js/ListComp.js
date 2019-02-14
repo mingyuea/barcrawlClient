@@ -28,8 +28,6 @@ class ListComp extends React.Component {
 	}
 
 	handleConfirm(){
-		console.log("Starting");
-		//this.props.onConfirm();
 		this.props.onPhase(2);
 	}
 

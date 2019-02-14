@@ -6,7 +6,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname,"..","server","dist"),
     //filename: "js/[name].js"
-    filename: "js/tmp.js"
+    filename: "js/user.js"
   },
   devtool: '#eval-source-map',
   mode: 'development',

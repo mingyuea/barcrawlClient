@@ -40,7 +40,6 @@ class MapCont extends React.Component{
 		let directionsDisplay = this.state.directionsDisplay;
 		directionsDisplay.setDirections({routes: []})
 		directionsDisplay.set('map', null);
-		console.log("set map to null");
 		this.props.delFin()
 	}
 
@@ -58,14 +57,11 @@ class MapCont extends React.Component{
 		let locInd = this.props.locInd;
 		let mArr = this.props.markerArr;
 		let newCenter;
-		console.log("map updated", this.props.delBool, this.props.drawRoute, mArr)
 		if(this.props.delBool){
-			console.log("delBool true")
 			this.handleClearMap();
 		}
 
 		if(this.props.drawRoute){
-			//console.log("rerendering...");
 			let mapObj = this.childMap.map;
 			let directionsService = this.state.directionsService;
 			let directionsDisplay = this.state.directionsDisplay;
