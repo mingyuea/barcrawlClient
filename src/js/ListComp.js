@@ -71,7 +71,7 @@ class ListComp extends React.Component {
 				}
 
 				listRender.push(
-					<ListGroupItem style={listGroupItem} >
+					<ListGroupItem key={'lgroupItem'+i} style={listGroupItem} >
 						<Row>
 						<Col xs="2" className="px-0" id={i} onClick={this.handleSelect}>
 							{chev}

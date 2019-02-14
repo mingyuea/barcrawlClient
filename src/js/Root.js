@@ -152,7 +152,9 @@ class Root extends React.Component{
 			locInd: null,
 			viewInd: 0,
 			playState: "play",
-			error: null
+			error: null,
+			testSort: [{a: 0}, {e: 0}, {d: 0}, {c: 0}, {b: 0}],
+			delBool: false
 		}
 
 		this.handleSubmit = this.handleSubmit.bind(this);
@@ -162,6 +164,8 @@ class Root extends React.Component{
 		this.handleMapClick = this.handleMapClick.bind(this);
 		this.handlePlayToggle = this.handlePlayToggle.bind(this);
 		this.handleFinishRender = this.handleFinishRender.bind(this);
+		this.handleReorder = this.handleReorder.bind(this);
+		this.mapDelFin = this.mapDelFin.bind(this);
 	}
 
 	handleSubmit(stateObj){
@@ -217,7 +221,8 @@ class Root extends React.Component{
 				viewInd: 0,
 				collBool: null,
 				playState: "play",
-				drawRoute: false
+				drawRoute: false,
+				delBool: true
 			});
 		}
 		else if(phase == 2){
@@ -243,7 +248,8 @@ class Root extends React.Component{
 
 		this.setState({
 			collBool: toggCopy,
-			locationArr: locCopy
+			locationArr: locCopy,
+			delBool: true
 		});
 
 		/*fetch() update locationArr*/
@@ -251,11 +257,9 @@ class Root extends React.Component{
 
 	handleMapClick(ind){
 		if(this.state.renderPhase == 1){
-			console.log("Otoggle")
 			this.listToggle(ind);
 		}
 		else if(this.state.renderPhase == 2){
-			console.log("paused state")
 			this.setState({
 				playState: "pause",
 				viewInd: ind
@@ -276,7 +280,6 @@ class Root extends React.Component{
 	}
 
 	handlePlayToggle(action, ind = 0){
-		//console.log(action);
 		if(action == "play"){
 			this.setState({
 				playState: action
@@ -292,7 +295,6 @@ class Root extends React.Component{
 			let currInd = this.state.locInd;
 			let newInd = currInd + 1;
 			
-			//console.log(newInd, "LOC IND");
 			if (currInd != this.state.locationArr.length - 1){
 				this.setState({
 					locInd: newInd
@@ -304,7 +306,6 @@ class Root extends React.Component{
 			let currInd = this.state.locInd;
 			let newInd = currInd - 1;
 
-			//console.log(newInd, "LOC IND");
 			if(currInd != 0){
 				this.setState({
 					locInd: newInd
@@ -320,9 +321,37 @@ class Root extends React.Component{
 		}
 	}
 
+	handleReorder(orderArr){
+		let currState = this.state.locationArr
+		let copyState = [...currState];
+		let initPoint = copyState.shift();
+		let arrLen = orderArr.length;
+		let stateLen = currState.length
+
+		for(let i = 0; i < stateLen; i++){
+			if(i == arrLen){
+				this.setState({
+					locationArr: [initPoint, ...copyState]
+				});
+				break;
+			}
+			else{
+				let newInd = orderArr[i];
+				copyState[newInd] = currState[i + 1]
+			}
+		}
+
+	}
+
 	handleFinishRender(){
 		this.setState({
 			drawRoute: false
+		})
+	}
+
+	mapDelFin(){
+		this.setState({
+			delBool: false
 		})
 	}
 
@@ -350,8 +379,11 @@ class Root extends React.Component{
 					markerArr={this.state.locationArr}
 					locInd={this.state.locInd} 
 					onClick={this.handleMapClick}
+					onReorder={this.handleReorder}
 					finishRender={this.handleFinishRender} 
 					endDest={this.state.searchState.endVal}
+					delBool={this.state.delBool}
+					delFin={this.mapDelFin}
 				/>
 				</Col>
 				</Row>

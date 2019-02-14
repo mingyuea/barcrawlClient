@@ -15,7 +15,8 @@ class EndCard extends React.Component{
 	}
 
 	handleRestart(){
-		window.location.reload();
+		console.log("going to phase 0 again")
+		this.props.onPhase(0);
 	}
 
 	render(){

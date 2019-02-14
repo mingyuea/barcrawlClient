@@ -4,6 +4,7 @@ import { render } from "react-dom";
 
 //import RootAuth from "./RootAuth.js";
 import Root from "./Root.js";
+//import RootTest from './test/RootTest.js';
 import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 
 //render(<RootAuth />, document.getElementById("app"));

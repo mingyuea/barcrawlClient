@@ -1,2 +1,5 @@
 node_modules/
 src_copy/
+src/js/test/
+test/
+static/

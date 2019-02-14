@@ -52,7 +52,7 @@ class SearchComp extends React.Component {
 							<FormGroup>
 								<h6 className="font-italic" style={subtitleFontFam}>Optionals</h6>
 								<CardText style={bodyFont}>Try and just enter in one or the other. You might get a weird route if fill out both (but does it really matter if you're drunk?)</CardText>
-								<Input onChange={this.handleChange} type="number" min="1" max="9" id="numVal" value={this.state.numVal} placeholder="How many bars?" />
+								<Input onChange={this.handleChange} type="number" min="1" max="10" id="numVal" value={this.state.numVal} placeholder="How many bars?" />
 								<Input className="mt-3" onChange={this.handleChange} type="text" id="endVal" value={this.state.endVal} placeholder="Enter in an ending address" />
 							</FormGroup>
 
