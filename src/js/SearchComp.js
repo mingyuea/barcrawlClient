@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardText, CardFooter, Badge, Form, FormGroup, Label, Input, Button, Spinner } from 'reactstrap';
+import { Row, Card, CardText, CardTitle, CardBody, CardFooter, ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, Form, FormGroup, Label, Input, Button, Spinner } from 'reactstrap';
 import { bodyFont, subtitleFontFam, cardColor } from './StyleObj.js'
 import 'react-perfect-scrollbar/dist/css/styles.css';
 import PerfectScrollbar from 'react-perfect-scrollbar';
@@ -11,11 +11,15 @@ class SearchComp extends React.Component {
 		this.state = {
 			startAdd: "",
 			endVal: "",
-			numVal: ""
+			numVal: "",
+			dropdown: false
 		}
 
 		this.handleChange = this.handleChange.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
+		this.ddToggle = this.ddToggle.bind(this);
+		this.handleDDItemClick = this.handleDDItemClick.bind(this);
+		this.handleItemDel = this.handleItemDel.bind(this);
 	}
 
 	handleChange(e){
@@ -33,14 +37,50 @@ class SearchComp extends React.Component {
 		this.props.onSubmit(this.state)
 	}
 
+	handleDDItemClick(e){
+		let ind = e.currentTarget.id;
+		this.props.onDDClick(ind);
+	}
+
+	handleItemDel(e){
+		let ind = e.currentTarget.parentNode.id;
+		this.props.onDDDel(ind);
+	}
+
+	ddToggle(){
+		this.setState(prevState =>({
+			dropdown: !prevState.dropdown
+		}))
+	}
+
 	render(){
-		let errMsg
+		let errMsg, dropMenu;
 		if(this.props.error){
 			errMsg = <p className="text-danger">Error: {this.props.error}</p>
 		}
+
+		if(this.props.saveList && this.props.saveList.length > 0){
+			let saveList = this.props.saveList;	
+			dropMenu = saveList.map((title, ind) => <DropdownItem key={"dropdown"+ind} id={ind} onClick={this.handleDDItemClick}>{title} <Button color="danger" className="py-1 px-2 float-right" onClick={this.handleItemDel}>X</Button></DropdownItem>)
+		}
+		else{
+			dropMenu = <DropdownItem id="nothing" className="px-1">Nothing saved</DropdownItem>
+		}
+
 		return(
-				<Card body style={cardColor} className="text-center text-white">
+				<Card body style={cardColor} className="text-center text-white pb-2 pt-3">
 					<PerfectScrollbar>
+					<CardTitle className="text-left mb-1">
+						<ButtonDropdown isOpen={this.state.dropdown} toggle={this.ddToggle}>
+							<DropdownToggle caret className="px-5">
+					        	Your Saved Bar Crawls
+					        </DropdownToggle>
+					        <DropdownMenu>
+					        	{dropMenu}
+        					</DropdownMenu>
+						</ButtonDropdown>
+					</CardTitle>
+					<CardBody className="py-1">
 					<h4 className="mb-1" style={subtitleFontFam}>Plan a Bar Crawl</h4>
 						<hr className="my-2"></hr>
 						<Form>
@@ -61,8 +101,9 @@ class SearchComp extends React.Component {
 								<Button color="info" onClick={this.handleSubmit}>FIND ME A ROUTE!</Button>
 							</FormGroup>
 						</Form>
+						</CardBody>
 						<CardFooter className="pt-1 pb-0">
-							<a href="/static/auth" color="info">Login/Signup</a>
+							<a href="/auth/logout" color="info">Logout</a>
 						</CardFooter>
 					</PerfectScrollbar>
 				</Card>

@@ -5,7 +5,8 @@ import { colColor } from './StyleObj.js';
 import SearchComp from './SearchComp.js';
 import ListComp from './ListComp.js';
 import LocationComp from './LocationComp.js';
-import EndCard from './EndCard.js';
+import UserEnd from './UserEnd.js';
+import SaveModal from './SaveModal.js';
 
 
 class SideContainer extends React.Component {
@@ -15,11 +16,14 @@ class SideContainer extends React.Component {
 
 	render(){
 		let phase = this.props.renderPhase;
-		let renderBlock;
+		let renderBlock, renderModal;
 		if(phase == 0){
 			renderBlock = <SearchComp 
 							error={this.props.error} 
-							onSubmit={this.props.onSubmit} />
+							saveList={this.props.saveList}
+							onSubmit={this.props.onSubmit}
+							onDDDel={this.props.onDDDel} 
+							onDDClick={this.props.onDDClick} />
 		}
 		else if(phase == 1){
 			renderBlock = <ListComp
@@ -38,8 +42,11 @@ class SideContainer extends React.Component {
 							onPlayToggle={this.props.onPlayToggle}
 							onPhase={this.props.onPhase} />
 		}
-		else{
-			renderBlock = <EndCard onPhase={this.props.onPhase} />
+		else if(phase == 3){
+			renderBlock = <UserEnd onPhase={this.props.onPhase} btnMode={this.props.btnMode} />
+		}
+		else if(phase == 4){
+			renderBlock = [<UserEnd onPhase={this.props.onPhase} btnMode={this.props.btnMode} />, <SaveModal onSave={this.props.modalSave} toggleModal={this.props.toggleModal} modalState={this.props.modalState} />]
 		}
 
 		return(

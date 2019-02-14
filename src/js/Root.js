@@ -27,13 +27,19 @@ class Root extends React.Component{
 			locationArr: [],
 			collBool: null,
 			drawRoute: false,
-			searchState: {},
+			searchState: {
+				startAdd: "",
+				numVal: "",
+				endVal: ""
+			},
 			locInd: null,
 			viewInd: 0,
 			playState: "play",
 			error: null,
-			testSort: [{a: 0}, {e: 0}, {d: 0}, {c: 0}, {b: 0}],
-			delBool: false
+			delBool: false,
+			modalState: false,
+			endBtnBool: true,
+			savedRoutes: null
 		}
 
 		this.handleSubmit = this.handleSubmit.bind(this);
@@ -45,6 +51,10 @@ class Root extends React.Component{
 		this.handleFinishRender = this.handleFinishRender.bind(this);
 		this.handleReorder = this.handleReorder.bind(this);
 		this.mapDelFin = this.mapDelFin.bind(this);
+		this.toggleModal = this.toggleModal.bind(this);
+		this.modalSave = this.modalSave.bind(this);
+		this.handleDDClick = this.handleDDClick.bind(this);
+		this.handleDDDel = this.handleDDDel.bind(this);
 	}
 
 	handleSubmit(stateObj){
@@ -111,6 +121,12 @@ class Root extends React.Component{
 				locInd: 0,
 			});
 		}
+		else if(phase == 4){
+			this.setState({
+				renderPhase: phase,
+				modalState: true
+			})
+		}
 		else{
 			this.setState({
 				renderPhase: phase
@@ -175,11 +191,30 @@ class Root extends React.Component{
 			let newInd = currInd + 1;
 			
 			if (currInd != this.state.locationArr.length - 1){
+				fetch('/api/update/ind',{
+					method: "POST",
+
+				})
 				this.setState({
 					locInd: newInd
 				})
 			}
-			/*fetch() update index*/
+			/*fetch post and update index*/
+			fetch('/api/update/ind', {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({"currInd": newInd})
+			})
+			.then(res => res.json())
+			.then(data => {
+				if(!data.actionSuccess){
+					this.setState({
+						error: data.error
+					});
+				}
+			});
 		}
 		else if(action == "back"){
 			let currInd = this.state.locInd;
@@ -191,6 +226,22 @@ class Root extends React.Component{
 				})
 			}
 			/*fetch() update index*/
+
+			fetch('/api/update/ind', {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({"currInd": newInd})
+			})
+			.then(res => res.json())
+			.then(data => {
+				if(!data.actionSuccess){
+					this.setState({
+						error: data.error
+					});
+				}
+			});
 		}
 		else{
 			this.setState({
@@ -209,9 +260,27 @@ class Root extends React.Component{
 
 		for(let i = 0; i < stateLen; i++){
 			if(i == arrLen){
-				this.setState({
-					locationArr: [initPoint, ...copyState]
-				});
+				let newOrder = [initPoint, ...copyState]
+
+				fetch('/api/update/route', {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify({"routeArr": newOrder})
+				})
+				.then(res => res.json())
+				.then(data =>{
+					if(data.actionSuccess){
+						this.setState({
+							locationArr: newOrder
+						});
+					}
+					else{
+						console.log(data.error);
+					}
+				})
+		
 				break;
 			}
 			else{
@@ -228,9 +297,130 @@ class Root extends React.Component{
 		})
 	}
 
+	handleDDClick(ind){
+		let reqObj = {
+			routeInd: ind
+		}
+
+		fetch('/api/routes/get', {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify(reqObj)
+		})
+		.then(res => res.json())
+		.then(data => {
+			if(data.actionSuccess){
+				let tmpArr = [];
+				let arrLen = data.routeArr.length;
+
+				for(let i = 0; i < arrLen; i++){
+					tmpArr.push(false);
+				}
+
+				this.setState({
+					collBool: tmpArr,
+					locationArr: data.routeArr,
+					drawRoute: true,
+					locInd: 0,
+					renderPhase: 2
+				})
+			}
+			else{
+				this.setState({
+					error: data.error
+				})
+			}
+		})
+	}
+
+	handleDDDel(ind){
+		let copyList = [...this.state.savedRoutes]
+		let reqObj = {
+			routeName: copyList[ind]
+		}
+
+		fetch('/api/routes/delete', {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify(reqObj)
+		})
+		.then(res => res.json())
+		.then(data => {
+			if(data.actionSuccess){
+				copyList.splice(ind, 1);
+				this.setState({
+					savedRoutes: copyList
+				})
+			}
+			else{
+				this.setState({
+					error: data.error
+				})
+			}
+		})
+	}
+
 	mapDelFin(){
 		this.setState({
 			delBool: false
+		})
+	}
+
+	modalSave(inVal){
+		let reqObj = {
+			"routeArr": this.state.locationArr,
+			"routeName": inVal
+		}
+
+		fetch('/api/routes/save', {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify(reqObj)
+		})
+		.then(res => res.json())
+		.then(data => this.setState({
+					modalState: false,
+					endBtnBool: false
+		}))
+	}
+
+	toggleModal(){
+		this.setState(prevState => ({
+				modalState: !prevState.modalState
+		}))
+	}
+
+	componentDidMount(){
+		fetch('/api/init')
+		.then(res => res.json())
+		.then(data => {
+			if(data.actionSuccess){
+				let routeLen = data.routeArr.length;
+				let tmpArr = []
+				for(let i = 0; i < routeLen; i++){
+					tmpArr.push(false);
+				}
+
+				this.setState({
+					locationArr: data.routeArr,
+					locInd: data.currentInd,
+					drawRoute: true,
+					collBool: tmpArr,
+					renderPhase: 2,
+					savedRoutes: data.savedRoutes
+				})
+			}
+			else{
+				this.setState({
+					savedRoutes: data.savedRoutes
+				})
+			}
 		})
 	}
 
@@ -246,11 +436,18 @@ class Root extends React.Component{
 					onCancel={this.listCancel}
 					onSelect={this.listToggle}
 					onPlayToggle={this.handlePlayToggle}
+					onDDClick={this.handleDDClick}
+					onDDDel={this.handleDDDel}
 					locations={this.state.locationArr}
 					locInd={this.state.locInd}
 					viewInd={this.state.viewInd}
 					playState={this.state.playState}
 					error={this.state.error}
+					btnMode={this.state.endBtnBool}
+					modalState={this.state.modalState}
+					toggleModal={this.toggleModal}
+					modalSave={this.modalSave}
+					saveList={this.state.savedRoutes}
 				/>
 				<Col xs="12" sm="6" md="7" lg="8" className="h-100 px-0 d-flex align-items-center justify-content-center overflow-auto">
 				<MapCont

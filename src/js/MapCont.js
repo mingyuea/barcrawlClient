@@ -89,7 +89,7 @@ class MapCont extends React.Component{
 				coorArr.push(tmpObj);
 			}
 
-			if(this.props.endDest.length>0){
+			if(this.props.endDest && this.props.endDest.length>0){
 				endDest = this.props.endDest;
 				let tmpObj = {
 					location: {
@@ -99,7 +99,6 @@ class MapCont extends React.Component{
 					stopover :true
 				}
 				coorArr.push(tmpObj)
-
 			}
 			else{
 				endDest = {
